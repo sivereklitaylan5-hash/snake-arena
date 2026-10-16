@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Arena — Yılanını Büyüt!</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Snake Arena ana sayfa"><span class="brand-mark">●</span> SNAKE<span>ARENA</span></a>
+      <div class="top-actions">
+        <button id="soundBtn" class="icon-btn" title="Sesi aç/kapat">🔊 Ses açık</button>
+        <button id="shopBtn" class="icon-btn shop-open">🛒 Kostüm Mağazası</button>
+        <button id="helpBtn" class="icon-btn">❔ Nasıl oynanır?</button>
+      </div>
+    </header>
+
+    <section class="game-shell">
+      <canvas id="game" aria-label="Yılan oyunu"></canvas>
+      <div class="hud">
+        <div class="hud-card score-card"><small>SKORUN</small><strong id="score">0</strong><span id="lengthLabel">Uzunluk: 8</span></div>
+        <div class="hud-right">
+          <div class="hud-card rank-card"><small>ARENA LİDERLERİ</small><ol id="leaderboard"><li><span>1. Neon</span><b>320</b></li><li><span>2. Turbo</span><b>240</b></li><li><span>3. Misket</span><b>180</b></li></ol></div>
+          <button id="pauseBtn" class="pause-btn" title="Oyunu duraklat">Ⅱ Duraklat</button>
+          <div class="minimap-wrap"><small>ARENA HARİTASI</small><canvas id="minimap" width="150" height="150"></canvas></div>
+        </div>
+      </div>
+      <div id="pauseScreen" class="overlay hidden">
+        <div class="modal">
+          <div class="eyebrow">MOLA ZAMANI</div>
+          <h2>Oyun duraklatıldı</h2>
+          <p>Hazır olduğunda arenaya geri dön.</p>
+          <button id="resumeBtn" class="primary-btn">DEVAM ET <span>➜</span></button>
+          <button id="pauseMenuBtn" class="secondary-btn">Ana menü</button>
+        </div>
+      </div>
+
+      <div id="startScreen" class="overlay">
+        <div class="modal start-modal">
+          <div class="eyebrow">ARCADE • IO OYUNU</div>
+          <h1>Yılanını büyüt.<br><span>Arenaya hükmet.</span></h1>
+          <p>Parlayan yemleri topla, rakiplerden kaç ve en uzun yılan ol!</p>
+          <label for="playerName">Yılanının adı</label>
+          <input id="playerName" maxlength="16" value="Oyuncu" autocomplete="nickname">
+          <div class="skin-row" aria-label="Yılan rengi">
+            <button class="skin selected" data-skin="#53f59a" style="--skin:#53f59a" aria-label="Yeşil"></button>
+            <button class="skin" data-skin="#43c6ff" style="--skin:#43c6ff" aria-label="Mavi"></button>
+            <button class="skin" data-skin="#ff5bc8" style="--skin:#ff5bc8" aria-label="Pembe"></button>
+            <button class="skin" data-skin="#ffbf4a" style="--skin:#ffbf4a" aria-label="Turuncu"></button>
+            <button class="skin" data-skin="#a98bff" style="--skin:#a98bff" aria-label="Mor"></button>
+          </div>
+          <button id="playBtn" class="primary-btn">OYUNA BAŞLA <span>➜</span></button>
+          <div class="controls-hint">Bilgisayar: fareyle yön ver • Tıkla veya Space: hızlan</div>
+        </div>
+      </div>
+
+      <div id="gameOverScreen" class="overlay hidden">
+        <div class="modal">
+          <div class="eyebrow">OYUN BİTTİ</div>
+          <h2>Güzel mücadele!</h2>
+          <p>Skorun: <strong id="finalScore">0</strong></p>
+          <p id="bestScoreText" class="muted">En iyi skorun: 0</p>
+          <div class="ad-slot ad-gameover"><span class="ad-label">REKLAM</span><span>Oyun sonu reklam alanı • gerçek reklam bağlı değil</span></div>
+          <button id="againBtn" class="primary-btn">TEKRAR OYNA <span>↻</span></button>
+          <button id="menuBtn" class="secondary-btn">Ana menü</button>
+        </div>
+      </div>
+
+      <div id="shopScreen" class="overlay hidden shop-overlay">
+        <section class="shop-modal" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
+          <button id="closeShop" class="close-btn" aria-label="Mağazayı kapat">×</button>
+          <div class="eyebrow">SNAKE ARENA • KOZMETİK MAĞAZA</div>
+          <h2 id="shopTitle">Yılanını özelleştir <span>✦</span></h2>
+          <p class="shop-intro">Özel görünümünü seç. Kostümler sadece görünüşü değiştirir; oyunda avantaj sağlamaz.</p>
+          <div class="shop-grid">
+            <article class="product-card free-product"><div class="snake-preview preview-basic">〰</div><h3>Klasik Neon</h3><p>Başlangıç kostümü</p><strong>ÜCRETSİZ</strong><button class="secondary-btn equip-skin" data-skin="#53f59a" data-id="classic">Kullan</button></article>
+            <article class="product-card"><div class="snake-preview preview-fire">〰</div><h3>Ateş Yılanı</h3><p>Alev tonlarında parlama</p><strong>₺29,99</strong><button class="buy-skin" data-id="fire" data-name="Ateş Yılanı" data-price="29,99">Satın al</button></article>
+            <article class="product-card"><div class="snake-preview preview-ice">〰</div><h3>Buz Yılanı</h3><p>Buz mavisi efekt</p><strong>₺29,99</strong><button class="buy-skin" data-id="ice" data-name="Buz Yılanı" data-price="29,99">Satın al</button></article>
+            <article class="product-card"><div class="snake-preview preview-gold">〰</div><h3>Altın Yılan</h3><p>Parlak altın görünüm</p><strong>₺49,99</strong><button class="buy-skin" data-id="gold" data-name="Altın Yılan" data-price="49,99">Satın al</button></article>
+            <article class="product-card"><div class="snake-preview preview-neon">〰</div><h3>Neon Galaksi</h3><p>Mor ve pembe parıltı</p><strong>₺39,99</strong><button class="buy-skin" data-id="galaxy" data-name="Neon Galaksi" data-price="39,99">Satın al</button></article>
+            <article class="product-card"><div class="snake-preview preview-dragon">〰</div><h3>Ejderha</h3><p>Efsanevi turuncu parıltı</p><strong>₺69,99</strong><button class="buy-skin" data-id="dragon" data-name="Ejderha" data-price="69,99">Satın al</button></article>
+          </div>
+          <div id="shopNotice" class="shop-notice" role="status">Demo mağaza: Gerçek ödeme bağlı değil. Kostüm sahipliği bu tarayıcıda test amaçlı saklanır; gerçek satın alma sayılmaz.</div>
+          <button id="backToGame" class="secondary-btn shop-back">Oyuna geri dön</button>
+        </section>
+      </div>
+
+      <div id="helpPanel" class="help-panel hidden">
+        <button id="closeHelp" class="close-btn" aria-label="Kapat">×</button>
+        <h3>Nasıl oynanır?</h3>
+        <p><b>Fare:</b> Yılanın yönünü belirler.</p>
+        <p><b>Fare tıklaması / Space:</b> Kısa süre hızlanır. Hızlanırken puanından biraz harcarsın.</p>
+        <p><b>Parlayan yemler:</b> Yılanını büyütür ve skor kazandırır.</p>
+        <p><b>Rakip yılanlara çarpma:</b> Oyunu bitirir. Rakipler çarpışınca yem bırakabilir.</p>
+        <p class="muted">Bu sürüm tek oyunculu, bilgisayar kontrollü rakiplerle çalışır.</p>
+      </div>
+
+      <div class="bottom-hud">
+        <span><i class="dot"></i> <span id="arenaStatus">ARENA AKTİF</span></span>
+        <span id="statusText">Yemleri topla ve büyü!</span>
+        <span class="boost-wrap"><span>HIZ</span><i class="boost-track"><i id="boostBar"></i></i></span>
+        <span class="mini-controls">SPACE / TIKLA: HIZLAN</span>
+      </div>
+    </section>
+    <section class="ad-slot ad-banner" aria-label="Reklam alanı">
+      <span class="ad-label">REKLAM</span>
+      <div><strong>Snake Arena'yı destekle</strong><p>Bu alan, reklam sağlayıcısı hesabın onaylandıktan sonra gerçek reklam göstermek için ayrılmıştır.</p></div>
+      <span class="ad-placeholder">728 × 90 • Reklam alanı</span>
+    </section>
+    <footer><span>Snake Arena</span><span>Bir tarayıcı oyunu • Kendi tasarımımız</span></footer>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
